@@ -1,9 +1,14 @@
-package orionkropt;
+package orionkropt.bot;
 
-public class Commands {
+import java.util.HashMap;
+
+public class CommandsHandler {
     public enum Command {START, NOCOMMAND}
 
     private static Command command = Command.NOCOMMAND;
+    private final static HashMap<String, Command> commands = new HashMap<>() {{
+        put("/start", Command.START);
+    }};
 
     public static void parseCommand(String msg) {
         if (msg == null) {
@@ -11,11 +16,11 @@ public class Commands {
             return;
         }
         if (msg.startsWith("/")) {
-            if (msg.equals("/start")) {
-                command = Command.START;
-            } else {
+            if (!commands.containsKey(msg)) {
                 command = Command.NOCOMMAND;
+                return;
             }
+            command = commands.get(msg);
         }
     }
 
