@@ -22,6 +22,11 @@
             <version>${telegram.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>${telegram.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.telegram</groupId>
