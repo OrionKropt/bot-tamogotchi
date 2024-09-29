@@ -1,4 +1,6 @@
-import GithubComOrionKroptBotTamogotchUsers.AppUser;
+package orionkropt;
+
+import orionkropt.users.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.CopyMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -6,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import GithubComOrionKroptBotTamogotchUsers.Auth;
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -47,8 +48,6 @@ public class Bot extends TelegramLongPollingBot {
 
             copyMessage(id, msg.getMessageId());
         }
-
-
 
 
         AppUser User = Auth.getUser(id);

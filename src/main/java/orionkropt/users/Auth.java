@@ -1,4 +1,4 @@
-package GithubComOrionKroptBotTamogotchUsers;
+package orionkropt.users;
 
 
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Auth {
     // Пока что харним пользователя в hashmap
-    private static Map<Long, AppUser> users = new HashMap<Long, AppUser>();
+    private static final Map<Long, AppUser> users = new HashMap<Long, AppUser>();
 
     public static enum statusCode {INCORRECT_NAME, INCORRECT_CITY, INCORRECT_INPUT, FAILED_REGISTRATION, SUCCESS, REGISTRATION_FINISHED}
 
@@ -82,8 +82,7 @@ public class Auth {
             city = msg.getText().split("\n")[1];
 
             res = Auth.checkRegisterData(username, city);
-            switch (res)
-            {
+            switch (res) {
                 case statusCode.SUCCESS:
                     CurrentUser.setCity(city);
                     CurrentUser.setUsername(username);
@@ -92,10 +91,10 @@ public class Auth {
                     return statusCode.REGISTRATION_FINISHED;
                 case statusCode.INCORRECT_INPUT:
                     request.append("""
-                        Не корректный формат имени или города
-                        Формат:
-                        Имя
-                        Город""");
+                            Не корректный формат имени или города
+                            Формат:
+                            Имя
+                            Город""");
                     break;
                 case statusCode.INCORRECT_NAME:
                     request.append("Имя должно содержать только латинские или русские буквы и быть длиной от 2 до 32 символов");
