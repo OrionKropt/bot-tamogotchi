@@ -1,4 +1,4 @@
-package GithubComOrionKroptBotTamogotchUsers;
+package orionkropt.users;
 
 
 public class AppUser {
