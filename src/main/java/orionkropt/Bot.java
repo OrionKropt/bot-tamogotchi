@@ -6,11 +6,10 @@ import org.telegram.telegrambots.meta.api.methods.CopyMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class Bot extends TelegramLongPollingBot {
 
+    private BotState botState = BotState.DEFAULT;
 
     @Override
     public String getBotUsername() {
@@ -19,7 +18,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return Token.ReadToken();
+        return Token.readToken();
     }
 
     @Override
@@ -29,24 +28,39 @@ public class Bot extends TelegramLongPollingBot {
         var user = msg.getFrom();
         Long id = user.getId();
         Commands.Command command;
-        Commands.SetCommand(msg.getText());
-        command = Commands.GetCommand();
+        Commands.parseCommand(msg.getText());
+        command = Commands.getCommand();
+        if (command != Commands.Command.NOCOMMAND) {
+            botState = BotState.COMMAND_EXECUTION;
+        }
+        switch (botState) {
+            case COMMAND_EXECUTION:
+                if (command != Commands.Command.NOCOMMAND) {
+                    switch (command) {
+                        case START:
+                            StringBuffer request = new StringBuffer();
+                            Auth.StatusCode ret = Auth.Registration(msg, request);
+                            if (ret == Auth.StatusCode.REGISTRATION_FINISHED) {
+                                Commands.setCommand(Commands.Command.NOCOMMAND);
+                                botState = BotState.DEFAULT;
+                            }
+                            System.out.println(request);
+                            sendText(id, request.toString());
+                            break;
 
-        if (command == Commands.Command.START) {
-            StringBuffer request = new StringBuffer();
-            Auth.statusCode ret = Auth.Registration(msg, request);
-            if (ret == Auth.statusCode.FAILED_REGISTRATION) {
-                command = Commands.Command.NOCOMMAND;
-            }
-            System.out.println(request);
-            sendText(id, request.toString());
-        } else {
-            StringBuilder sb = new StringBuilder(msg.getText());
-            String reversed = sb.reverse().toString();
+                        default:
 
-            sendText(id, reversed);
+                            break;
 
-            copyMessage(id, msg.getMessageId());
+                    }
+                }
+                break;
+            case DEFAULT:
+                StringBuilder sb = new StringBuilder(msg.getText());
+                String reversed = sb.reverse().toString();
+                sendText(id, reversed);
+                copyMessage(id, msg.getMessageId());
+                break;
         }
 
 
@@ -80,11 +94,5 @@ public class Bot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) throws TelegramApiException {
-        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        Bot bot = new Bot();
-        botsApi.registerBot(bot);
     }
 }
