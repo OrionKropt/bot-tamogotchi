@@ -2,6 +2,7 @@ package orionkropt.characters;
 
 public class Character {
     private String name;
+    private String type;
     private int satiety;
     private int purity;
     private int health;
@@ -10,8 +11,9 @@ public class Character {
     public enum Mood {HAPPY, FUNNY, SAD, DEPRESSED}
     // ToDo Добавить изображение и анимации
 
-    Character(String name) {
-        this.name = name;
+    Character(String type) {
+        this.type = type;
+        name = "default";
         satiety = 100;
         purity = 100;
         health = 100;
@@ -20,6 +22,10 @@ public class Character {
 
     public String getName() {
         return name;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public int getSatiety() {
@@ -36,6 +42,10 @@ public class Character {
 
     public Mood getMood() {
         return mood;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
 
