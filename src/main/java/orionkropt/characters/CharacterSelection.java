@@ -45,7 +45,7 @@ public class CharacterSelection {
             answer.setText("Вы выбрали тамогочи " + characterManager.getSendingType(character) + '.');
             sm.setChatId(chatId.toString());
             sm.setText("Введите имя вашего тамагочи:");
-            System.out.println("Selected character: " + callbackQuery.getData() + "for user: " + callbackQuery.getFrom().getFirstName());
+            System.out.println("Selected character: " + callbackQuery.getData() + " for user: " + callbackQuery.getFrom().getFirstName());
         } else {
             System.out.println("character is null. Can't create new Character");
         }
