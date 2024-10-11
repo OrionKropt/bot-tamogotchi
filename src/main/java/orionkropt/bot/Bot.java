@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import orionkropt.Token;
 import orionkropt.characters.CharacterSelection;
-import orionkropt.characters.StatusCode;
 import orionkropt.users.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -76,7 +75,7 @@ public class Bot extends TelegramLongPollingBot {
         Long id = user.getId();
         AppUser currentUser = auth.getUser(id);
         CharacterSelection characterSelection = new CharacterSelection();
-        SendMessage sm;
+        SendMessage sm = new SendMessage();
         CommandsHandler.Command command;
 
         if (currentUser != null) {
@@ -94,14 +93,13 @@ public class Bot extends TelegramLongPollingBot {
                 if (command != CommandsHandler.Command.NOCOMMAND) {
                     switch (command) {
                         case START:
-                            StringBuffer request = new StringBuffer();
-                            Auth.StatusCode ret = auth.Registration(msg, request);
+                            Auth.StatusCode ret = auth.Registration(msg, sm);
                             if (ret == Auth.StatusCode.REGISTRATION_FINISHED || ret == Auth.StatusCode.ALREADY_REGISTERED) {
                                 CommandsHandler.setCommand(CommandsHandler.Command.NOCOMMAND);
                                 botState = (ret == Auth.StatusCode.REGISTRATION_FINISHED) ? BotState.CHARACTER_SELECTION : BotState.DEFAULT;
                             }
-                            System.out.println(request);
-                            sendText(id, request.toString());
+                            System.out.println(sm.getText());
+                            sendMessage(sm);
                             if (ret == Auth.StatusCode.REGISTRATION_FINISHED) {
                                 sm = characterSelection.start(id);
                                 sendMessage(sm);
