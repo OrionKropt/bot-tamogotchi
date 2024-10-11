@@ -4,6 +4,7 @@ package orionkropt.users;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 
@@ -74,12 +75,13 @@ public class Auth {
         return res;
     }
 
-    public StatusCode Registration(@NotNull Message msg, StringBuffer request) {
+    public StatusCode Registration(@NotNull Message msg, SendMessage sm) {
         Long id = msg.getChat().getId();
         StatusCode res = registerUser(new AppUser(id));
+        sm.setChatId(id.toString());
         if (res == StatusCode.SUCCESS) {
             System.out.println("Start registration");
-            request.append("""
+            sm.setText("""
                     Добро пожаловть!
                     Введите ваше имя и город
                     
@@ -94,12 +96,10 @@ public class Auth {
             String city = null;
             AppUser currentUser = getUser(id);
             if (currentUser == null) {
-                throw new RuntimeException("CurrentU" +
-                        "" +
-                        "ser == null");
+                throw new RuntimeException("CurrentUser == null");
             }
             if (currentUser.getCity() != null && currentUser.getUsername() != null) {
-                res =  StatusCode.ALREADY_REGISTERED;
+                res = StatusCode.ALREADY_REGISTERED;
             }
             if (res != StatusCode.ALREADY_REGISTERED) {
                 res = retrieveUserCityAndNameFromMessage(msg, bufUsername, bufCity);
@@ -113,27 +113,25 @@ public class Auth {
                 case SUCCESS:
                     currentUser.setCity(city);
                     currentUser.setUsername(username);
-                    request.append("Регистрация прошла успешно!");
+                    sm.setText("Регистрация прошла успешно!");
                     System.out.println("Successful registration " + id + " " + msg.getFrom().getFirstName());
                     return StatusCode.REGISTRATION_FINISHED;
                 case INCORRECT_INPUT:
-                    request.append("""
+                    sm.setText("""
                             Некорректный формат имени или города
                             Формат:
                             Имя
                             Город""");
                     break;
                 case ALREADY_REGISTERED:
-                    request.append("""
-                            Пользователь уже зарегистрирован
-                            """);
+                    sm.setText("Пользователь уже зарегистрирован");
                     System.out.println("User is already registered " + id + " " + msg.getFrom().getFirstName());
                     return StatusCode.ALREADY_REGISTERED;
                 case INCORRECT_NAME:
-                    request.append("Имя должно содержать только латинские или русские буквы и быть длиной от 2 до 32 символов");
+                    sm.setText("Имя должно содержать только латинские или русские буквы и быть длиной от 2 до 32 символов");
                     break;
                 case INCORRECT_CITY:
-                    request.append("Название города может содержать только буквы, пробелы и дефисы и иметь длинну от 2 до 64 символов и начинаться с заглавной буквы");
+                    sm.setText("Название города может содержать только буквы, пробелы и дефисы и иметь длинну от 2 до 64 символов и начинаться с заглавной буквы");
                     break;
             }
             System.out.println("Incorrect registration data" + id + " " + msg.getFrom().getFirstName());

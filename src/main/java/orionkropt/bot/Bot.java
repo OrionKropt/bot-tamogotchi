@@ -2,12 +2,11 @@ package orionkropt.bot;
 
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.*;
 import orionkropt.Token;
-import orionkropt.characters.CharacterSelection;
-import orionkropt.characters.StatusCode;
+import orionkropt.game.characters.CharacterSelection;
 import orionkropt.users.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -76,7 +75,8 @@ public class Bot extends TelegramLongPollingBot {
         Long id = user.getId();
         AppUser currentUser = auth.getUser(id);
         CharacterSelection characterSelection = new CharacterSelection();
-        SendMessage sm;
+        SendMessage sm = new SendMessage();
+        SendMediaGroup mediaGroup = new SendMediaGroup();
         CommandsHandler.Command command;
 
         if (currentUser != null) {
@@ -94,16 +94,16 @@ public class Bot extends TelegramLongPollingBot {
                 if (command != CommandsHandler.Command.NOCOMMAND) {
                     switch (command) {
                         case START:
-                            StringBuffer request = new StringBuffer();
-                            Auth.StatusCode ret = auth.Registration(msg, request);
+                            Auth.StatusCode ret = auth.Registration(msg, sm);
                             if (ret == Auth.StatusCode.REGISTRATION_FINISHED || ret == Auth.StatusCode.ALREADY_REGISTERED) {
                                 CommandsHandler.setCommand(CommandsHandler.Command.NOCOMMAND);
                                 botState = (ret == Auth.StatusCode.REGISTRATION_FINISHED) ? BotState.CHARACTER_SELECTION : BotState.DEFAULT;
                             }
-                            System.out.println(request);
-                            sendText(id, request.toString());
+                            System.out.println(sm.getText());
+                            sendMessage(sm);
                             if (ret == Auth.StatusCode.REGISTRATION_FINISHED) {
-                                sm = characterSelection.start(id);
+                                characterSelection.start(id, sm, mediaGroup);
+                                sendMediaGroup(mediaGroup);
                                 sendMessage(sm);
                             }
                             break;
@@ -111,6 +111,10 @@ public class Bot extends TelegramLongPollingBot {
                             break;
                     }
                 }
+                break;
+            case CHARACTER_SELECTION:
+                botState = characterSelection.setNameOfUserCharacter(id,msg,sm);
+                sendMessage(sm);
                 break;
             case DEFAULT:
                 StringBuilder sb = new StringBuilder(msg.getText());
@@ -133,6 +137,21 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public void sendMediaGroup(SendMediaGroup mediaGroup) {
+        try {
+            execute(mediaGroup);
+        }catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendPhoto(SendPhoto sp) {
+        try {
+            execute(sp);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void sendText(@NotNull Long who, String what) {
         SendMessage sm = SendMessage.builder()
@@ -152,5 +171,4 @@ public class Bot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
-
 }
