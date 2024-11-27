@@ -1,4 +1,5 @@
-package orionkropt.characters;
+package orionkropt.game.characters;
+import orionkropt.image.Image;
 
 public class Character {
     private String name;
@@ -7,12 +8,14 @@ public class Character {
     private int purity;
     private int health;
     private Mood mood;
+    private Image image;
 
     public enum Mood {HAPPY, FUNNY, SAD, DEPRESSED}
     // ToDo Добавить изображение и анимации
 
-    Character(String type) {
+    public Character(String type, String path) {
         this.type = type;
+        image = new Image(path);
         name = "default";
         satiety = 100;
         purity = 100;
@@ -47,5 +50,7 @@ public class Character {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Image getImage() { return this.image; }
 }
 

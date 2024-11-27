@@ -2,17 +2,15 @@ package orionkropt.bot;
 
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.*;
 import orionkropt.Token;
-import orionkropt.characters.CharacterSelection;
+import orionkropt.game.characters.CharacterSelection;
 import orionkropt.users.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -32,6 +30,7 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(@NotNull Update update) {
         Long id = null;
         BotState botState = BotState.DEFAULT;
+
         if (update.hasMessage() && update.getMessage().hasText()) {
             handleMessage(botState, update);
             id = update.getMessage().getChatId();
@@ -51,6 +50,7 @@ public class Bot extends TelegramLongPollingBot {
         SendMessage sm = new SendMessage();
         AppUser currentUser = auth.getUser(id);
         CharacterSelection characterSelection = new CharacterSelection();
+
         if (currentUser != null) {
             botState = currentUser.getState();
         }
@@ -76,6 +76,7 @@ public class Bot extends TelegramLongPollingBot {
         AppUser currentUser = auth.getUser(id);
         CharacterSelection characterSelection = new CharacterSelection();
         SendMessage sm = new SendMessage();
+        SendMediaGroup mediaGroup = new SendMediaGroup();
         CommandsHandler.Command command;
 
         if (currentUser != null) {
@@ -101,7 +102,8 @@ public class Bot extends TelegramLongPollingBot {
                             System.out.println(sm.getText());
                             sendMessage(sm);
                             if (ret == Auth.StatusCode.REGISTRATION_FINISHED) {
-                                sm = characterSelection.start(id);
+                                characterSelection.start(id, sm, mediaGroup);
+                                sendMediaGroup(mediaGroup);
                                 sendMessage(sm);
                             }
                             break;
@@ -131,6 +133,21 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public void sendMediaGroup(SendMediaGroup mediaGroup) {
+        try {
+            execute(mediaGroup);
+        }catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendPhoto(SendPhoto sp) {
+        try {
+            execute(sp);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void sendText(@NotNull Long who, String what) {
         SendMessage sm = SendMessage.builder()
@@ -150,5 +167,4 @@ public class Bot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
-
 }
