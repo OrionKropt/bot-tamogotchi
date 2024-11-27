@@ -1,23 +1,26 @@
-package orionkropt.characters;
+package orionkropt.game.characters;
 
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import orionkropt.bot.BotState;
 
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CharacterSelection {
     private void addKeyBoard(@NotNull SendMessage sendMessage) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> lineKeyboardButtonsRow = new ArrayList<>();
-        List<List<InlineKeyboardButton>> keyboardRowList = new ArrayList<>();
+        ArrayList<InlineKeyboardButton> lineKeyboardButtonsRow = new ArrayList<>();
+        ArrayList<List<InlineKeyboardButton>> keyboardRowList = new ArrayList<>();
         lineKeyboardButtonsRow.add(InlineKeyboardButton.builder()
                 .text("Свинка").callbackData("pig_selected")
                 .build());
@@ -30,12 +33,27 @@ public class CharacterSelection {
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
     }
 
-    public SendMessage start(@NotNull Long id) {
-        SendMessage sendMessage = SendMessage.builder()
-                .chatId(id.toString())
-                .text("Выберите персонажа").build();
-        addKeyBoard(sendMessage);
-        return sendMessage;
+    public void start(@NotNull Long id, SendMessage sm, SendMediaGroup mediaGroup) {
+        CharacterManager characterManager = new CharacterManager();
+        ArrayList<Character> listCharacters = characterManager.getAllCharacters();
+        ArrayList<InputMedia> inputMedia = new ArrayList<>();
+
+        for (Character character : listCharacters) {
+            File file = character.getImage().getFile();
+            InputMediaPhoto mediaPhoto = new InputMediaPhoto();
+            mediaPhoto.setMedia(file, file.getName());
+            inputMedia.add(mediaPhoto);
+            System.out.println(file.getAbsolutePath());
+        }
+        System.out.println(inputMedia.size());
+
+        inputMedia.getFirst().setCaption("Персонажи");
+        mediaGroup.setChatId(id.toString());
+        mediaGroup.setMedias(inputMedia);
+
+        sm.setChatId(id.toString());
+        sm.setText("Выберите персонажа");
+        addKeyBoard(sm);
     }
 
     public AnswerCallbackQuery handleCallback(@NotNull CallbackQuery callbackQuery, Long chatId, SendMessage sm) {
