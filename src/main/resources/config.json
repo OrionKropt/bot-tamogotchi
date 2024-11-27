@@ -1,0 +1,23 @@
+{
+  "characters": {
+    "pig_selected": { "name": "pig",
+                      "path": "src/main/resources/pig.png"
+    },
+    "stub": { "name": "stub",
+              "path": "src/main/resources/stub.png"
+    },
+    "other_selected": { "name": "other",
+                        "path": null
+    }
+  },
+  "typeToSendingType": {
+    "pig": "Свинка",
+    "other": "Другое"
+  },
+  "rooms": {
+    "black-room": "src/main/resources/black-room.png",
+
+    "kitchen": "src/main/resources/kitchen.png",
+    "hall": "src/main/resources/hall.png"
+    }
+}
