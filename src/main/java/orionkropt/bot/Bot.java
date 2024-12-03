@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import orionkropt.Token;
+import orionkropt.characters.Character;
+import orionkropt.characters.CharacterManager;
 import orionkropt.characters.CharacterSelection;
 import orionkropt.users.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -109,6 +111,10 @@ public class Bot extends TelegramLongPollingBot {
                             break;
                     }
                 }
+                break;
+            case CHARACTER_SELECTION:
+                botState = characterSelection.setNameOfUserCharacter(id,msg,sm);
+                sendMessage(sm);
                 break;
             case DEFAULT:
                 StringBuilder sb = new StringBuilder(msg.getText());
