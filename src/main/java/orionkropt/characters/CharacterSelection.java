@@ -4,8 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import orionkropt.bot.BotState;
 
 
 import java.util.ArrayList;
@@ -51,5 +53,29 @@ public class CharacterSelection {
         }
 
         return answer;
+    }
+
+    public BotState setNameOfUserCharacter(@NotNull Long chatId, Message message, SendMessage sendMessage) {
+        CharacterManager characterManager = new CharacterManager();
+        Character userCharacter = characterManager.getCharacter(chatId);
+        sendMessage.setChatId(chatId.toString());
+        if (checkCorrectName(message.getText())){
+            userCharacter.setName(message.getText());
+            sendMessage.setText("Регистрация прошла успешно!");
+            return BotState.DEFAULT;
+        } else {
+            sendMessage.setText("Имя персонажа некорректно, попробуйте еще раз");
+            return BotState.CHARACTER_SELECTION;
+        }
+    }
+
+    private boolean checkCorrectName(String name){
+        return name.matches("^[A-ZА-ЯЁ][a-zA-Zа-яА-ЯёЁ]+$") && name.length() > 2 && name.length() <= 64;
+
+
+
+
+
+
     }
 }
