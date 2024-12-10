@@ -69,7 +69,6 @@ public class CharacterSelection {
         } else {
             System.out.println("character is null. Can't create new Character");
         }
-
         return answer;
     }
 
@@ -89,11 +88,5 @@ public class CharacterSelection {
 
     private boolean checkCorrectName(String name){
         return name.matches("^[A-ZА-ЯЁ][a-zA-Zа-яА-ЯёЁ]+$") && name.length() > 2 && name.length() <= 64;
-
-
-
-
-
-
     }
 }
