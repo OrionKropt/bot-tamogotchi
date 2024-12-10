@@ -8,6 +8,7 @@ import orionkropt.game.Game;
 import orionkropt.game.characters.CharacterManager;
 import orionkropt.image.ImageManager;
 
+
 public class Main {
     public static void main(String[] args) throws TelegramApiException {
         ImageManager.INSTANCE.initialize();
