@@ -1,7 +1,7 @@
 {
   "characters": {
-    "pig_selected": { "name": "pig",
-                      "path": "src/main/resources/pig.png"
+    "pig_selected": { "name": "pig-base",
+                      "path": "src/main/resources/pig-base.png"
     },
     "stub": { "name": "stub",
               "path": "src/main/resources/stub.png"
@@ -15,9 +15,9 @@
     "other": "Другое"
   },
   "rooms": {
-    "black-room": "src/main/resources/black-room.png",
-
     "kitchen": "src/main/resources/kitchen.png",
-    "hall": "src/main/resources/hall.png"
-    }
+    "hall": "src/main/resources/hall.png",
+    "bathroom": "src/main/resources/bathroom.png",
+    "bedroom": "src/main/resources/bedroom.png"
+  }
 }
