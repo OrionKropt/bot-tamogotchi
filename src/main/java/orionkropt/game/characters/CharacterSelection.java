@@ -79,7 +79,7 @@ public class CharacterSelection {
         if (checkCorrectName(message.getText())){
             userCharacter.setName(message.getText());
             sendMessage.setText("Регистрация прошла успешно!");
-            return BotState.DEFAULT;
+            return BotState.GAME;
         } else {
             sendMessage.setText("Имя персонажа некорректно, попробуйте еще раз");
             return BotState.CHARACTER_SELECTION;

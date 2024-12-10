@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.*;
 import orionkropt.Token;
 import orionkropt.game.characters.CharacterSelection;
+import orionkropt.game.Game;
 import orionkropt.users.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,7 +18,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class Bot extends TelegramLongPollingBot {
 
     private final Auth auth = new Auth();
-
+    private final Game game = new Game();
     @Override
     public String getBotUsername() {
         return "YouTamogotchi_bot";
@@ -112,6 +113,9 @@ public class Bot extends TelegramLongPollingBot {
                     }
                 }
                 break;
+            case GAME:
+                game.mainLoop(id, msg.getText());
+                break;
             case CHARACTER_SELECTION:
                 botState = characterSelection.setNameOfUserCharacter(id,msg,sm);
                 sendMessage(sm);
@@ -171,4 +175,5 @@ public class Bot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
 }

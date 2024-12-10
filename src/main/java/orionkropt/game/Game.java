@@ -3,6 +3,7 @@ package orionkropt.game;
 import org.reflections.Reflections;
 import orionkropt.game.characters.Character;
 import orionkropt.game.characters.CharacterManager;
+import orionkropt.game.rooms.Bedroom;
 import orionkropt.game.rooms.Hall;
 import orionkropt.game.rooms.Kitchen;
 import orionkropt.game.rooms.Room;
@@ -23,7 +24,7 @@ public class Game {
     static private final HashMap<String, Room> rooms = new HashMap<>();
     static private final HashMap<String, Method> actions = new HashMap<>();
     static private final Render render = new Render();
-    static private final String startRoom = "hall";
+    static private final String startRoom = "bedroom";
     private GameState gameState;
     private Image currentImage;
     private Room currentRoom;
@@ -35,6 +36,7 @@ public class Game {
     private void initRooms() {
         rooms.put("kitchen", new Kitchen());
         rooms.put("hall", new Hall());
+        rooms.put("bedroom", new Bedroom());
     }
 
     public void initActions() {
@@ -69,6 +71,10 @@ public class Game {
         CharacterManager characterManager = new CharacterManager();
         Character currentCharacter = characterManager.getCharacter(id);
 
+        if (currentCharacter == null) {
+            currentRoom = rooms.get(startRoom);
+        }
+
         switch (gameState) {
             case MAIN:
                 try {
@@ -79,10 +85,7 @@ public class Game {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Room room = rooms.get(startRoom);
-                if (room != null) {
-                    currentRoom = room;
-                }
+                new Render().update(currentRoom, currentCharacter);
                 break;
         }
     }
