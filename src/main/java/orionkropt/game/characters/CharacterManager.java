@@ -2,7 +2,6 @@ package orionkropt.game.characters;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import orionkropt.image.Image;
 import orionkropt.image.ImageManager;
@@ -27,8 +26,10 @@ public class CharacterManager {
                 String key = entry.getKey();
                 String name = entry.getValue().get("name").asText();
                 String path = entry.getValue().get("path").asText();
-                Character character = new Character(name, path);
-                if (!Objects.equals(key, "other_selected")) {
+                float x = entry.getValue().get("position").get("x").floatValue();
+                float y = entry.getValue().get("position").get("y").floatValue();
+                Character character = new Character(name, path, x, y);
+                if (!Objects.equals(key, "other")) {
                     Image image = character.getImage();
                     image.setImage(ImageManager.INSTANCE.getImage(name).getImage());
                     characters.put(key, character);
@@ -50,7 +51,7 @@ public class CharacterManager {
             JsonNode characterConfigs = config.get("characters");
             characterConfigs.fields().forEachRemaining(entry -> {
                 String key = entry.getKey();
-                if (!Objects.equals(key, "other_selected")) {
+                if (!Objects.equals(key, "other")) {
                     listCharacters.add(characters.get(key));
                 }
             });

@@ -15,7 +15,15 @@ public class Auth {
     // Пока что харним пользователя в hashmap
     private static final Map<Long, AppUser> users = new HashMap<>();
 
-    public enum StatusCode {INCORRECT_NAME, INCORRECT_CITY, INCORRECT_INPUT, REGISTRATION_FAILED, SUCCESS, ALREADY_REGISTERED, REGISTRATION_FINISHED}
+    public enum StatusCode {
+        INCORRECT_NAME,
+        INCORRECT_CITY,
+        INCORRECT_INPUT,
+        REGISTRATION_FAILED,
+        SUCCESS,
+        ALREADY_REGISTERED,
+        REGISTRATION_FINISHED
+    }
 
     public StatusCode registerUser(AppUser user) {
         Long id;

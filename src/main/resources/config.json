@@ -1,17 +1,20 @@
 {
   "characters": {
-    "pig_selected": { "name": "pig-base",
-                      "path": "src/main/resources/pig-base.png"
+    "pig": { "name": "pig-base",
+              "path": "src/main/resources/pig-base.png",
+              "position": { "x": 590, "y": 450 }
     },
     "stub": { "name": "stub",
-              "path": "src/main/resources/stub.png"
+              "path": "src/main/resources/stub.png",
+              "position": { "x": 590, "y": 450 }
     },
-    "other_selected": { "name": "other",
-                        "path": null
+    "other": { "name": "other",
+                "path": null,
+                "position": { "x": 590, "y": 450 }
     }
   },
   "typeToSendingType": {
-    "pig": "Свинка",
+    "pig-base": "Свинка",
     "other": "Другое"
   },
   "rooms": {

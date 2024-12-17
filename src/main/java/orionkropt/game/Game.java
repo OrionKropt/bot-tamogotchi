@@ -9,7 +9,6 @@ import orionkropt.game.rooms.Kitchen;
 import orionkropt.game.rooms.Room;
 import orionkropt.image.Image;
 
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
@@ -62,7 +61,11 @@ public class Game {
     public void initialize() {
         initRooms();
         initActions();
-        currentRoom = rooms.get(startRoom);
+    }
+
+    public void startGame(Long id) {
+        gameStates.put(id, gameState);
+        userRooms.put(id, rooms.get(startRoom));
     }
 
     public void mainLoop (Long id, String message) {
@@ -85,8 +88,10 @@ public class Game {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                new Render().update(currentRoom, currentCharacter);
+                render.update(currentRoom, currentCharacter);
+
                 break;
+
         }
     }
 

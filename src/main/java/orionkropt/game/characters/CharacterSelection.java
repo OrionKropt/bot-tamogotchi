@@ -22,10 +22,10 @@ public class CharacterSelection {
         ArrayList<InlineKeyboardButton> lineKeyboardButtonsRow = new ArrayList<>();
         ArrayList<List<InlineKeyboardButton>> keyboardRowList = new ArrayList<>();
         lineKeyboardButtonsRow.add(InlineKeyboardButton.builder()
-                .text("Свинка").callbackData("pig_selected")
+                .text("Свинка").callbackData("pig")
                 .build());
         lineKeyboardButtonsRow.add(InlineKeyboardButton.builder()
-                .text("Другие").callbackData("other_selected")
+                .text("Другие").callbackData("other")
                 .build());
 
         keyboardRowList.add(lineKeyboardButtonsRow);
