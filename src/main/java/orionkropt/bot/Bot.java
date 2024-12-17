@@ -32,12 +32,11 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(@NotNull Update update) {
         Long id = null;
-        BotState botState = BotState.DEFAULT;
         if (update.hasMessage() && update.getMessage().hasText()) {
-            handleMessage(botState, update);
+            handleMessage(update);
             id = update.getMessage().getChatId();
         } else if (update.hasCallbackQuery()) {
-            handleCallbackQuery(botState, update.getCallbackQuery());
+            handleCallbackQuery(update.getCallbackQuery());
             id = update.getCallbackQuery().getFrom().getId();
         }
 
@@ -46,15 +45,21 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private void handleCallbackQuery(BotState botState, @NotNull CallbackQuery callbackQuery) {
+    private void handleCallbackQuery(@NotNull CallbackQuery callbackQuery) {
         User user = callbackQuery.getFrom();
         Long id = user.getId();
         SendMessage sm = new SendMessage();
         AppUser currentUser = auth.getUser(id);
         CharacterSelection characterSelection = new CharacterSelection();
-        if (currentUser != null) {
+        BotState botState;
+
+        if (currentUser == null) {
+            System.out.println("Пользавотель не найден");
+            botState = BotState.DEFAULT;
+        } else {
             botState = currentUser.getState();
         }
+
         switch (botState) {
             case CHARACTER_SELECTION:
                 AnswerCallbackQuery answer;
@@ -70,7 +75,7 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    private void handleMessage(BotState botState, @NotNull Update update) {
+    private void handleMessage(@NotNull Update update) {
         Message msg = update.getMessage();
         User user = msg.getFrom();
         Long id = user.getId();
@@ -79,8 +84,11 @@ public class Bot extends TelegramLongPollingBot {
         SendMessage sm = new SendMessage();
         SendMediaGroup mediaGroup = new SendMediaGroup();
         CommandsHandler.Command command;
-
-        if (currentUser != null) {
+        BotState botState;
+        if (currentUser == null) {
+            System.out.println("Пользавотель не найден");
+            botState = BotState.DEFAULT;
+        } else {
             botState = currentUser.getState();
         }
 
@@ -119,6 +127,8 @@ public class Bot extends TelegramLongPollingBot {
             case CHARACTER_SELECTION:
                 botState = characterSelection.setNameOfUserCharacter(id,msg,sm);
                 sendMessage(sm);
+                game.startGame(id);
+                game.mainLoop(id, msg.getText());
                 break;
             case DEFAULT:
                 StringBuilder sb = new StringBuilder(msg.getText());
@@ -126,6 +136,7 @@ public class Bot extends TelegramLongPollingBot {
                 sendText(id, reversed);
                 break;
         }
+        currentUser = auth.getUser(id);
         if (currentUser != null) {
             currentUser.setState(botState);
         }

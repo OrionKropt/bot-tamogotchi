@@ -9,6 +9,7 @@ import orionkropt.game.characters.Character;
 import javax.imageio.ImageIO;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -31,19 +32,13 @@ public class Render {
         try {
             BufferedImage bufImageRoom  = ImageIO.read(roomImage.getFile());
             BufferedImage bufImageCharacter = ImageIO.read(characterImage.getFile());
+            Point2D position = characterImage.getPosition();
             Graphics2D g2 = bufImageRoom.createGraphics();
+            //g2.drawImage(bufImageCharacter, (int) position.getX(), (int) position.getY(), null);
             g2.drawImage(bufImageCharacter,  590,450, null);
             ImageIO.write(bufImageRoom, "png", new File("src/main/resources/a.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-
-
     }
-
-
-
 }

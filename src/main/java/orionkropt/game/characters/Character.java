@@ -13,9 +13,9 @@ public class Character {
     public enum Mood {HAPPY, FUNNY, SAD, DEPRESSED}
     // ToDo Добавить изображение и анимации
 
-    public Character(String type, String path) {
+    public Character(String type, String path, float x, float y) {
         this.type = type;
-        image = new Image(path);
+        image = new Image(path, x, y);
         name = "default";
         satiety = 100;
         purity = 100;
