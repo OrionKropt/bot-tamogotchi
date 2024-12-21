@@ -4,21 +4,25 @@ import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.*;
 import orionkropt.Token;
-import orionkropt.game.characters.CharacterSelection;
-import orionkropt.game.Game;
-import orionkropt.users.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
+import orionkropt.game.characters.CharacterSelection;
+import orionkropt.game.Game;
+import orionkropt.users.*;
 
 public class Bot extends TelegramLongPollingBot {
 
     private final Auth auth = new Auth();
     private final Game game = new Game();
+    private final CharacterSelection characterSelection = new CharacterSelection();
+
     @Override
     public String getBotUsername() {
         return "YouTamogotchi_bot";
@@ -48,10 +52,12 @@ public class Bot extends TelegramLongPollingBot {
     private void handleCallbackQuery(@NotNull CallbackQuery callbackQuery) {
         User user = callbackQuery.getFrom();
         Long id = user.getId();
+        Integer messageId = callbackQuery.getMessage().getMessageId();
         SendMessage sm = new SendMessage();
         AppUser currentUser = auth.getUser(id);
-        CharacterSelection characterSelection = new CharacterSelection();
         BotState botState;
+        InlineKeyboard inlineKeyboard = new InlineKeyboard();
+        SendPhoto sp = new SendPhoto();
 
         if (currentUser == null) {
             System.out.println("Пользавотель не найден");
@@ -67,6 +73,11 @@ public class Bot extends TelegramLongPollingBot {
                 sendAnswerCallBack(answer);
                 sendMessage(sm);
                 break;
+            case GAME:
+                DeleteMessage dm = new DeleteMessage(id.toString(), messageId);
+                deleteMessage(dm);
+                game.mainLoop(id, callbackQuery.getData(), sp, inlineKeyboard);
+                sendPhoto(sp);
             case DEFAULT:
                 break;
         }
@@ -80,10 +91,11 @@ public class Bot extends TelegramLongPollingBot {
         User user = msg.getFrom();
         Long id = user.getId();
         AppUser currentUser = auth.getUser(id);
-        CharacterSelection characterSelection = new CharacterSelection();
         SendMessage sm = new SendMessage();
         SendMediaGroup mediaGroup = new SendMediaGroup();
+        SendPhoto photo = new SendPhoto();
         CommandsHandler.Command command;
+        InlineKeyboard inlineKeyboard = new InlineKeyboard();
         BotState botState;
         if (currentUser == null) {
             System.out.println("Пользавотель не найден");
@@ -111,7 +123,8 @@ public class Bot extends TelegramLongPollingBot {
                             System.out.println(sm.getText());
                             sendMessage(sm);
                             if (ret == Auth.StatusCode.REGISTRATION_FINISHED) {
-                                characterSelection.start(id, sm, mediaGroup);
+                                characterSelection.start(id, sm, mediaGroup, inlineKeyboard);
+                                addInlineKeyboard(sm, inlineKeyboard);
                                 sendMediaGroup(mediaGroup);
                                 sendMessage(sm);
                             }
@@ -121,14 +134,14 @@ public class Bot extends TelegramLongPollingBot {
                     }
                 }
                 break;
-            case GAME:
-                game.mainLoop(id, msg.getText());
-                break;
             case CHARACTER_SELECTION:
-                botState = characterSelection.setNameOfUserCharacter(id,msg,sm);
+                botState = characterSelection.setNameOfUserCharacter(id, msg, sm);
                 sendMessage(sm);
-                game.startGame(id);
-                game.mainLoop(id, msg.getText());
+                if (botState == BotState.GAME) {
+                    game.startGame(id, photo, inlineKeyboard);
+                    addInlineKeyboard(photo, inlineKeyboard);
+                    sendPhoto(photo);
+                }
                 break;
             case DEFAULT:
                 StringBuilder sb = new StringBuilder(msg.getText());
@@ -179,6 +192,25 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public void editMessageMedia(EditMessageMedia editMedia) {
+        try {
+            execute(editMedia);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void editReplyKeyboard(@NotNull EditMessageReplyMarkup editKeyboard, InlineKeyboard inlineKeyboard, Long id, Integer messageId) {
+        editKeyboard.setReplyMarkup(inlineKeyboard.getInlineKeyboardMarkup());
+        editKeyboard.setChatId(id.toString());
+        editKeyboard.setMessageId(messageId);
+        try {
+            execute(editKeyboard);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendAnswerCallBack(AnswerCallbackQuery answer) {
         try {
             execute(answer);
@@ -187,4 +219,19 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public void deleteMessage(DeleteMessage dm) {
+        try {
+            execute(dm);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addInlineKeyboard(@NotNull SendMessage sendMessage, InlineKeyboard inlineKeyboard) {
+        sendMessage.setReplyMarkup(inlineKeyboard.getInlineKeyboardMarkup());
+    }
+
+    private void addInlineKeyboard(@NotNull SendPhoto sendPhoto, InlineKeyboard inlineKeyboard) {
+        sendPhoto.setReplyMarkup(inlineKeyboard.getInlineKeyboardMarkup());
+    }
 }

@@ -8,32 +8,24 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import orionkropt.bot.BotState;
+import orionkropt.bot.InlineKeyboard;
+import orionkropt.collections.Pair;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public class CharacterSelection {
-    private void addKeyBoard(@NotNull SendMessage sendMessage) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        ArrayList<InlineKeyboardButton> lineKeyboardButtonsRow = new ArrayList<>();
-        ArrayList<List<InlineKeyboardButton>> keyboardRowList = new ArrayList<>();
-        lineKeyboardButtonsRow.add(InlineKeyboardButton.builder()
-                .text("Свинка").callbackData("pig")
-                .build());
-        lineKeyboardButtonsRow.add(InlineKeyboardButton.builder()
-                .text("Другие").callbackData("other")
-                .build());
-
-        keyboardRowList.add(lineKeyboardButtonsRow);
-        inlineKeyboardMarkup.setKeyboard(keyboardRowList);
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+    private void createKeyboard(InlineKeyboard inlineKeyboard) {
+        inlineKeyboard.clear();
+        inlineKeyboard.createInlineKeyboardMarkup(new ArrayList<>(Arrays.asList(
+                        new Pair<>("Свинка", "pig"),
+                        new Pair<>("Другие", "other")
+        )));
     }
 
-    public void start(@NotNull Long id, SendMessage sm, SendMediaGroup mediaGroup) {
+    public void start(@NotNull Long id, SendMessage sm, SendMediaGroup mediaGroup, InlineKeyboard inlineKeyboard) {
         CharacterManager characterManager = new CharacterManager();
         ArrayList<Character> listCharacters = characterManager.getAllCharacters();
         ArrayList<InputMedia> inputMedia = new ArrayList<>();
@@ -53,7 +45,7 @@ public class CharacterSelection {
 
         sm.setChatId(id.toString());
         sm.setText("Выберите персонажа");
-        addKeyBoard(sm);
+        createKeyboard(inlineKeyboard);
     }
 
     public AnswerCallbackQuery handleCallback(@NotNull CallbackQuery callbackQuery, Long chatId, SendMessage sm) {
@@ -78,7 +70,7 @@ public class CharacterSelection {
         sendMessage.setChatId(chatId.toString());
         if (checkCorrectName(message.getText())){
             userCharacter.setName(message.getText());
-            sendMessage.setText("Регистрация прошла успешно!");
+            sendMessage.setText("Регистрация завершена!");
             return BotState.GAME;
         } else {
             sendMessage.setText("Имя персонажа некорректно, попробуйте еще раз");

@@ -16,18 +16,16 @@ public enum ImageManager {
 
     private static final HashMap<String ,Image> imagePool = new HashMap<>();
 
-    public StatusCode loadImage(Image image) {
+    public void loadImage(Image image) {
         try {
             BufferedImage imageBuffer = ImageIO.read(new File(image.getPath()));
             image.setImage(imageBuffer);
-            return StatusCode.IMAGE_LOAD_SUCCESS;
         } catch (IOException e) {
-            e.printStackTrace();
-            return StatusCode.IMAGE_LOAD_ERROR;
+            throw new RuntimeException(e);
         }
     }
 
-    public void initialize() {
+    public StatusCode initialize() {
         ObjectMapper mapper = new ObjectMapper();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.json")) {
             JsonNode config = mapper.readTree(input);
@@ -36,8 +34,10 @@ public enum ImageManager {
             characterConfigs.fields().forEachRemaining(entry -> {
                 String name = entry.getValue().get("name").asText();
                 String path = entry.getValue().get("path").asText();
+                float x = entry.getValue().get("position").get("x").floatValue();
+                float y = entry.getValue().get("position").get("y").floatValue();
                 if (!Objects.equals(path, "null")) {
-                    Image image = new Image(path);
+                    Image image = new Image(path, x, y);
                     loadImage(image);
                     imagePool.put(name, image);
                 }
@@ -50,7 +50,9 @@ public enum ImageManager {
             });
         } catch (IOException e) {
             e.printStackTrace();
+            return StatusCode.IMAGE_LOAD_ERROR;
         }
+        return StatusCode.IMAGE_LOAD_SUCCESS;
     }
 
     public Image getImage(String name) {

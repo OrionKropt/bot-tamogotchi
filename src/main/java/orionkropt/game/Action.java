@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-
 @Target(ElementType.METHOD)
-public @interface Command
-{
+
+public @interface Action {
     String name();
-    String sendName();
 }

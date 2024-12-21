@@ -4,10 +4,10 @@ import orionkropt.game.Command;
 
 public class Hall extends Room {
     public Hall() {
-        super("hall", "src/main/resources/hall.png");
+        super("hall", "Зал", "src/main/resources/hall.png");
     }
 
-    @Command(name = "playGames")
+    @Command(name = "playGames", sendName = "Играть")
     public void playGames(Long id) {
         System.out.println("Playing games");
     }
