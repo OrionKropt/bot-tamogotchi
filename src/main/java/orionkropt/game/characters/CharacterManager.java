@@ -11,11 +11,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CharacterManager {
     private static final HashMap<Long, Character> userCharacters = new HashMap<>();
     private static final HashMap<String, Character> characters = new HashMap<>();
     private static final HashMap<String, String> typeToSendingType = new HashMap<>();
+    private static Timer time = new Timer();
+    private static final Long TIMER_DELAY_ONE_MINUTE = 60000L;
 
     public void initialize() {
         ObjectMapper mapper = new ObjectMapper();
@@ -41,6 +45,66 @@ public class CharacterManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (var character : userCharacters.values()) {
+                    character.getStats().changeSatiety(-1);
+                }
+            }
+        }, 0, 15*TIMER_DELAY_ONE_MINUTE);
+
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (var character : userCharacters.values()) {
+                    character.getStats().changeEnergy(-1);
+                }
+            }
+        }, 5*TIMER_DELAY_ONE_MINUTE, 15*TIMER_DELAY_ONE_MINUTE);
+
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (var character : userCharacters.values()) {
+                    character.getStats().changePurity(-1);
+                }
+            }
+        }, 10*TIMER_DELAY_ONE_MINUTE, 15*TIMER_DELAY_ONE_MINUTE);
+
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (var character : userCharacters.values()) {
+                    CharacterStats stats = character.getStats();
+                    int change = 0;
+
+                    if (CharacterStats.STAT_VALUE_GOOD <= stats.getSatiety())
+                    {
+                        change += 1;
+                    } else if (stats.getSatiety() <= CharacterStats.STAT_VALUE_POOR) {
+                        change -= 1;
+                    }
+
+                    if (CharacterStats.STAT_VALUE_GOOD <= stats.getPurity())
+                    {
+                        change += 1;
+                    } else if (stats.getPurity() <= CharacterStats.STAT_VALUE_POOR) {
+                        change -= 1;
+                    }
+
+                    if (CharacterStats.STAT_VALUE_GOOD <= stats.getEnergy())
+                    {
+                        change += 1;
+                    } else if (stats.getEnergy() <= CharacterStats.STAT_VALUE_POOR) {
+                        change -= 1;
+                    }
+
+                    stats.changeHealth(change);
+                }
+            }
+        }, 15*TIMER_DELAY_ONE_MINUTE, 15*TIMER_DELAY_ONE_MINUTE);
     }
 
     public ArrayList<Character> getAllCharacters() {
