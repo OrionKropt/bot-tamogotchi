@@ -11,11 +11,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CharacterManager {
     private static final HashMap<Long, Character> userCharacters = new HashMap<>();
     private static final HashMap<String, Character> characters = new HashMap<>();
     private static final HashMap<String, String> typeToSendingType = new HashMap<>();
+    private static Timer time = new Timer();
 
     public void initialize() {
         ObjectMapper mapper = new ObjectMapper();
@@ -36,6 +39,71 @@ public class CharacterManager {
                 }
 
             });
+            /* Initialize the Sins */
+            /* Gluttony */
+            time.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for (var character : userCharacters.values()) {
+                        character.getStats().changeSatiety(-1);
+                    }
+                }
+            }, 0*60, 15*60);
+
+            /* Sloth */
+            time.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for (var character : userCharacters.values()) {
+                        character.getStats().changeEnergy(-1);
+                    }
+                }
+            }, 5*60, 15*60);
+
+            /* Lust */
+            time.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for (var character : userCharacters.values()) {
+                        character.getStats().changePurity(-1);
+                    }
+                }
+            }, 10*60, 15*60);
+
+            /* Health check (not a sin) */
+            time.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for (var character : userCharacters.values()) {
+                        CharacterStats stats = character.getStats();
+                        int change = 0;
+
+                        if (CharacterStats.STAT_VALUE_GOOD <= stats.getSatiety())
+                        {
+                            change += 1;
+                        } else if (stats.getSatiety() <= CharacterStats.STAT_VALUE_POOR) {
+                            change -= 1;
+                        }
+
+                        if (CharacterStats.STAT_VALUE_GOOD <= stats.getPurity())
+                        {
+                            change += 1;
+                        } else if (stats.getPurity() <= CharacterStats.STAT_VALUE_POOR) {
+                            change -= 1;
+                        }
+
+                        if (CharacterStats.STAT_VALUE_GOOD <= stats.getEnergy())
+                        {
+                            change += 1;
+                        } else if (stats.getEnergy() <= CharacterStats.STAT_VALUE_POOR) {
+                            change -= 1;
+                        }
+
+                        stats.changeHealth(change);
+                    }
+                }
+            }, 15*60, 15*60); // TODO: Create global values for periods; calculate delay with stepping
+
             JsonNode typeMappings = config.get("typeToSendingType");
             typeMappings.fields().forEachRemaining(entry -> typeToSendingType.put(entry.getKey(), entry.getValue().asText()));
         } catch (IOException e) {
