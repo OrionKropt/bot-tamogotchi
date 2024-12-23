@@ -1,5 +1,7 @@
 package orionkropt.game.characters;
 
+
+
 public class CharacterStats {
     public static final int STAT_VALUE_MAX = 100;
     public static final int STAT_VALUE_GOOD = 70;
@@ -7,16 +9,21 @@ public class CharacterStats {
     public static final int STAT_VALUE_BAD = 10;
     public static final int STAT_VALUE_MIN = 0;
 
+    public enum Mood {HAPPY, FUNNY, SAD, DEPRESSED };
+
     private int satiety;
     private int purity;
     private int energy;
     private int health;
+    // TODO Добавить изображение и анимации
+    private Mood mood;
 
     public CharacterStats() {
         satiety = STAT_VALUE_MAX;
         purity = STAT_VALUE_MAX;
         energy = STAT_VALUE_MAX;
         health = STAT_VALUE_MAX;
+        mood = Mood.HAPPY;
     }
 
     public void changeSatiety(int val) {
@@ -59,6 +66,8 @@ public class CharacterStats {
         }
     }
 
+    public void changeMood(Mood mood) { this.mood = mood; }
+
     public int getSatiety() {
         return satiety;
     }
@@ -74,5 +83,9 @@ public class CharacterStats {
     public int getHealth() {
         return health;
     }
+
+    public Mood getMood() { return mood; }
+
+
 }
 

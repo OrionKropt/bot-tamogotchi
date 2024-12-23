@@ -1,6 +1,10 @@
 package orionkropt.game.rooms;
 
 import orionkropt.game.Command;
+import orionkropt.game.characters.Character;
+import orionkropt.game.characters.CharacterManager;
+
+import java.util.Random;
 
 public class Kitchen extends Room {
     public Kitchen() {
@@ -9,10 +13,17 @@ public class Kitchen extends Room {
 
     @Command(name = "feed", sendName = "Кормить")
     public void feed(Long id) {
-        System.out.println("feed");
+        Random rand = new Random();
+        Character character = new CharacterManager().getCharacter(id);
+        character.getStats().changeSatiety(100);
+        character.getStats().changePurity(-1 * rand.nextInt(50));
     }
+
     @Command(name = "cook", sendName = "Готовить")
     public void cook(Long id) {
-        System.out.println("cook");
+        Random rand = new Random();
+        Character character = new CharacterManager().getCharacter(id);
+        character.getStats().changeEnergy(-20);
+        character.getStats().changePurity(-1 * rand.nextInt(50));
     }
 }

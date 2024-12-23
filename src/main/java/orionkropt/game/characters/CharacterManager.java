@@ -18,7 +18,7 @@ public class CharacterManager {
     private static final HashMap<Long, Character> userCharacters = new HashMap<>();
     private static final HashMap<String, Character> characters = new HashMap<>();
     private static final HashMap<String, String> typeToSendingType = new HashMap<>();
-    private static Timer time = new Timer();
+    private static final Timer time = new Timer();
     private static final Long TIMER_DELAY_ONE_MINUTE = 60000L;
 
     public void initialize() {
@@ -105,6 +105,30 @@ public class CharacterManager {
                 }
             }
         }, 15*TIMER_DELAY_ONE_MINUTE, 15*TIMER_DELAY_ONE_MINUTE);
+
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (var character : userCharacters.values()) {
+                    CharacterStats stats = character.getStats();
+                    CharacterStats.Mood mood = stats.getMood();
+                    int minStat = Math.min(
+                            Math.min(stats.getEnergy(), stats.getHealth()),
+                            Math.min(stats.getSatiety(), stats.getPurity()));
+
+                    if (minStat <= CharacterStats.STAT_VALUE_BAD) {
+                        mood = CharacterStats.Mood.DEPRESSED;
+                    } else if (minStat <= CharacterStats.STAT_VALUE_POOR) {
+                        mood = CharacterStats.Mood.SAD;
+                    } else if (minStat <= CharacterStats.STAT_VALUE_GOOD) {
+                        mood = CharacterStats.Mood.FUNNY;
+                    } else {
+                        mood = CharacterStats.Mood.HAPPY;
+                    }
+                    stats.changeMood(mood);
+                }
+            }
+        }, 0, 1000);
     }
 
     public ArrayList<Character> getAllCharacters() {

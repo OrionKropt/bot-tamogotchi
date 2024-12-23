@@ -2,7 +2,7 @@
   "characters": {
     "pig": { "name": "pig-base",
               "path": "src/main/resources/pig-base.png",
-              "position": { "x": 590, "y": 450 }
+              "position": { "x": 581, "y": 567 }
     },
     "stub": { "name": "stub",
               "path": "src/main/resources/stub.png",

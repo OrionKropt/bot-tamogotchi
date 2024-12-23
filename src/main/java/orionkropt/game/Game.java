@@ -7,10 +7,8 @@ import orionkropt.bot.InlineKeyboard;
 import orionkropt.collections.Pair;
 import orionkropt.game.characters.Character;
 import orionkropt.game.characters.CharacterManager;
-import orionkropt.game.rooms.Bedroom;
-import orionkropt.game.rooms.Hall;
-import orionkropt.game.rooms.Kitchen;
-import orionkropt.game.rooms.Room;
+import orionkropt.game.characters.CharacterStats;
+import orionkropt.game.rooms.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -43,6 +41,7 @@ public class Game {
         rooms.put("kitchen", new Kitchen());
         rooms.put("hall", new Hall());
         rooms.put("bedroom", new Bedroom());
+        rooms.put("bathroom", new Bathroom());
     }
 
     public void initActions() {
@@ -83,6 +82,7 @@ public class Game {
         sendPhoto.setChatId(id.toString());
         sendPhoto.setPhoto(new InputFile(render.release()));
         setMainKeyboard(rooms.get(startRoom), inlineKeyboard);
+        setCharacterStatsOnScreen(characterManager.getCharacter(id), sendPhoto);
     }
 
     public void mainLoop (Long id, String message,  SendPhoto sp, InlineKeyboard inlineKeyboard) {
@@ -101,7 +101,9 @@ public class Game {
                 runGameAction(message, id, inlineKeyboard);
                 break;
             case ROOM_SELECTION:
-                currentRoom = rooms.get(message);
+                if (rooms.containsKey(message)) {
+                    currentRoom = rooms.get(message);
+                }
                 setMainKeyboard(currentRoom, inlineKeyboard);
                 gameState = GameState.MAIN;
                 break;
@@ -111,6 +113,7 @@ public class Game {
         sp.setChatId(id.toString());
         sp.setPhoto(new InputFile(render.release()));
         sp.setReplyMarkup(inlineKeyboard.getInlineKeyboardMarkup());
+        setCharacterStatsOnScreen(currentCharacter, sp);
         gameStates.put(id, gameState);
         userRooms.put(id, currentRoom);
     }
@@ -151,6 +154,31 @@ public class Game {
             rawKeyboardData.add(new Pair<>(room.getSendName(), room.getName()));
         }
         inlineKeyboard.createInlineKeyboardMarkup(rawKeyboardData);
+    }
+
+    private void setCharacterStatsOnScreen(Character character, SendPhoto sendPhoto) {
+        CharacterStats stats = character.getStats();
+        String mood;
+        switch (stats.getMood()) {
+            case HAPPY -> mood = "Счастливое";
+            case FUNNY -> mood = "Игривое";
+            case SAD -> mood = "Грустное";
+            case DEPRESSED -> mood = "Депрессивное";
+            default -> mood = "---";
+        }
+        sendPhoto.setCaption("""
+                Тамогочи - %s
+                Настроние: %s
+                Здоровье:\t%d
+                Чистота:\t%d
+                Энергия:\t%d
+                Сытость:\t%d""".formatted(
+                        character.getName(),
+                        mood,
+                        stats.getHealth(),
+                        stats.getPurity(),
+                        stats.getEnergy(),
+                        stats.getSatiety()));
     }
 
     private void runRoomAction(String action, Long id,InlineKeyboard inlineKeyboard) {
