@@ -129,6 +129,13 @@ public class Bot extends TelegramLongPollingBot {
                                 sendMessage(sm);
                             }
                             break;
+                        case RESTART:
+                            characterSelection.start(id, sm, mediaGroup, inlineKeyboard);
+                            addInlineKeyboard(sm, inlineKeyboard);
+                            sendMediaGroup(mediaGroup);
+                            sendMessage(sm);
+                            botState = BotState.CHARACTER_SELECTION;
+                            CommandsHandler.setCommand(CommandsHandler.Command.NOCOMMAND);
                         default:
                             break;
                     }

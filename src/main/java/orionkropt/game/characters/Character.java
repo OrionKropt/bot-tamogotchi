@@ -14,6 +14,13 @@ public class Character {
         stats = new CharacterStats();
     }
 
+    public Character(Character other) {
+        this.type = other.type;
+        this.image = other.image;;
+        this.name = other.name;
+        this.stats = new CharacterStats(other.stats);
+    }
+
     public String getName() {
         return name;
     }

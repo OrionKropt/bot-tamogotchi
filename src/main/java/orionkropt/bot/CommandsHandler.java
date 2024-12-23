@@ -3,11 +3,12 @@ package orionkropt.bot;
 import java.util.HashMap;
 
 public class CommandsHandler {
-    public enum Command {START, NOCOMMAND}
+    public enum Command {START, RESTART, NOCOMMAND}
 
     private static Command command = Command.NOCOMMAND;
     private final static HashMap<String, Command> commands = new HashMap<>() {{
         put("/start", Command.START);
+        put("/restart", Command.RESTART);
     }};
 
     public static void parseCommand(String msg) {

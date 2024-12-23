@@ -111,7 +111,7 @@ public class CharacterManager {
             public void run() {
                 for (var character : userCharacters.values()) {
                     CharacterStats stats = character.getStats();
-                    CharacterStats.Mood mood = stats.getMood();
+                    CharacterStats.Mood mood;
                     int minStat = Math.min(
                             Math.min(stats.getEnergy(), stats.getHealth()),
                             Math.min(stats.getSatiety(), stats.getPurity()));

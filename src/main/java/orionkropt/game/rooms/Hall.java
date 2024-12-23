@@ -19,6 +19,7 @@ public class Hall extends Room {
         character.getStats().changePurity(-15);
         character.getStats().changeSatiety(-15);
         character.getStats().changeEnergy (-30);
+        character.getStats().changeHealth(-50);
         character.getStats().changeMood(random.nextInt(2) == 1 ? Mood.HAPPY : Mood.FUNNY);
     }
 }

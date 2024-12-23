@@ -50,7 +50,7 @@ public class CharacterSelection {
 
     public AnswerCallbackQuery handleCallback(@NotNull CallbackQuery callbackQuery, Long chatId, SendMessage sm) {
         CharacterManager characterManager = new CharacterManager();
-        Character character = characterManager.createCharacter(callbackQuery.getData());
+        Character character = new Character(characterManager.createCharacter(callbackQuery.getData()));
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(callbackQuery.getId());
         if (characterManager.addCharacter(chatId, character) == StatusCode.SUCCESS) {

@@ -37,12 +37,8 @@ public class Auth {
         return StatusCode.SUCCESS;
     }
 
-    @Nullable
     public AppUser getUser(long id) {
-        if (users.containsKey(id)) {
             return users.get(id);
-        }
-        return null;
     }
 
     @Contract(pure = true)
@@ -112,8 +108,8 @@ public class Auth {
             if (res != StatusCode.ALREADY_REGISTERED) {
                 res = retrieveUserCityAndNameFromMessage(msg, bufUsername, bufCity);
                 if (res == StatusCode.SUCCESS) {
-                    username = bufUsername.toString();
-                    city = bufCity.toString();
+                    username = new String(bufUsername);
+                    city = new String(bufCity);
                     res = checkRegisterData(username, city);
                 }
             }

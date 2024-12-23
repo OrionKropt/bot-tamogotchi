@@ -90,30 +90,29 @@ public class Game {
         currentRoom = userRooms.get(id);
         Character currentCharacter = characterManager.getCharacter(id);
 
-        if (currentCharacter == null) {
-            System.out.println("Character not found");
-            return;
+        if (currentCharacter.getStats().getHealth() == 0) {
+            gameOver(sp, id);
+            inlineKeyboard.clear();
+        } else {
+            switch (gameState) {
+                case MAIN:
+                    runRoomAction(message, id, inlineKeyboard);
+                    runGameAction(message, inlineKeyboard);
+                    break;
+                case ROOM_SELECTION:
+                    if (rooms.containsKey(message)) {
+                        currentRoom = rooms.get(message);
+                    }
+                    setMainKeyboard(currentRoom, inlineKeyboard);
+                    gameState = GameState.MAIN;
+                    break;
+            }
+            setCharacterStatsOnScreen(currentCharacter, sp);
         }
-
-        switch (gameState) {
-            case MAIN:
-                runRoomAction(message, id, inlineKeyboard);
-                runGameAction(message, id, inlineKeyboard);
-                break;
-            case ROOM_SELECTION:
-                if (rooms.containsKey(message)) {
-                    currentRoom = rooms.get(message);
-                }
-                setMainKeyboard(currentRoom, inlineKeyboard);
-                gameState = GameState.MAIN;
-                break;
-        }
-
         render.update(currentRoom, currentCharacter);
         sp.setChatId(id.toString());
         sp.setPhoto(new InputFile(render.release()));
         sp.setReplyMarkup(inlineKeyboard.getInlineKeyboardMarkup());
-        setCharacterStatsOnScreen(currentCharacter, sp);
         gameStates.put(id, gameState);
         userRooms.put(id, currentRoom);
     }
@@ -193,7 +192,7 @@ public class Game {
         }
     }
 
-    private void runGameAction(String action, Long id, InlineKeyboard inlineKeyboard) {
+    private void runGameAction(String action, InlineKeyboard inlineKeyboard) {
         Method method = gameActions.get(action);
         try {
             if (method != null) {
@@ -204,8 +203,18 @@ public class Game {
         }
     }
 
+    private void gameOver(SendPhoto sendPhoto, Long id) {
+        sendPhoto.setCaption("""
+                Игра окончена
+                Ваш тамогочи умер(
+                Чтобы создать нового персонажа нажмите команду
+                /restart
+                """);
+        new CharacterManager().removeCharacter(id);
+    }
+
     @Action(name = "changeRoom")
-    private void clickedСhangeRoom(InlineKeyboard inlineKeyboard) {
+    private void clickedChangeRoom(InlineKeyboard inlineKeyboard) {
         setRoomListKeyboardOnScreen(inlineKeyboard);
         setBackButton(inlineKeyboard);
         gameState = GameState.ROOM_SELECTION;

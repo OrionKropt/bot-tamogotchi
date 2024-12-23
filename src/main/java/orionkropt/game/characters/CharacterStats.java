@@ -26,6 +26,14 @@ public class CharacterStats {
         mood = Mood.HAPPY;
     }
 
+    public CharacterStats(CharacterStats other) {
+        this.satiety = other.satiety;
+        this.purity = other.purity;
+        this.energy = other.energy;
+        this.health = other.health;
+        this.mood = other.mood;
+    }
+
     public void changeSatiety(int val) {
         if (satiety + val < STAT_VALUE_MIN) {
             satiety = STAT_VALUE_MIN;
